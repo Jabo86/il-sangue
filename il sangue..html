@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sito sul sangue per l'Operatore Socio-Sanitario (OSS): scopri componenti, funzioni e quiz interattivi.">
+    <meta name="keywords" content="sangue, OSS, globuli rossi, plasma, piastrine, quiz sangue">
+    <title>Il Sangue</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0d1b2a, #1b263b);
+            color: #e0e0e0;
+            overflow-x: hidden;
+            position: relative;
+            font-size: 18px;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/circuit-pattern.png');
+            opacity: 0.05;
+            z-index: -1;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+            position: relative;
+        }
+        header {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 3.5em;
+            color: #00d4ff;
+            text-shadow: 0 0 10px #00d4ff;
+            animation: glow 2s infinite alternate;
+        }
+        header p {
+            margin: 10px 0 0;
+            font-size: 1.2em;
+            color: #ecf0f1;
+        }
+        nav {
+            background: #34495e;
+            padding: 10px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            margin: 0 20px;
+            font-size: 1.2em;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #3498db;
+        }
+        section {
+            background: rgba(20, 40, 60, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+            margin-bottom: 50px;
+            animation: fadeIn 1.5s ease-in;
+            border: 1px solid #00d4ff;
+        }
+        section h2 {
+            color: #00d4ff;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 0 0 5px #00d4ff;
+        }
+        section h3 {
+            color: #00d4ff;
+            font-size: 1.5em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        section p, section ul {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        section ul {
+            list-style-type: disc;
+            padding-left: 40px;
+        }
+        section ul ul {
+            list-style-type: circle;
+            padding-left: 30px;
+        }
+        .quiz-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .quiz-selector {
+            margin-bottom: 20px;
+        }
+        .quiz-selector select {
+            padding: 10px;
+            font-size: 1.2em;
+            background: rgba(30, 50, 70, 0.95);
+            color: #e0e0e0;
+            border: 1px solid #00d4ff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .quiz-timer {
+            font-size: 1.5em;
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+        .quiz-balls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .quiz-ball {
+            width: 40px;
+            height: 40px;
+            background: rgba(30, 50, 70, 0.95);
+            border: 2px solid #00d4ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            color: #e0e0e0;
+            transition: background 0.3s ease;
+        }
+        .quiz-ball.correct {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        .quiz-ball.incorrect {
+            background: #ff0000;
+            color: #000;
+            box-shadow: 0 0 10px #ff0000;
+        }
+        .quiz-question {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #00d4ff;
+        }
+        .quiz-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .quiz-option {
+            background: rgba(30, 50, 70, 0.95);
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: 1px solid #00d4ff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 1.1em;
+        }
+        .quiz-option:hover {
+            background: rgba(0, 212, 255, 0.3);
+        }
+        .quiz-feedback {
+            margin-top: 20px;
+            font-size: 1.2em;
+            display: none;
+        }
+        .correct {
+            color: #00ff00;
+        }
+        .incorrect {
+            color: #ff0000;
+        }
+        .quiz-result {
+            margin-top: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .retry-button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: #00d4ff;
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .retry-button:hover {
+            background: #3498db;
+        }
+        footer {
+            background: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        footer p {
+            margin: 0;
+            font-size: 1em;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 5px #00d4ff, 0 0 10px #00d4ff; }
+            to { text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff; }
+        }
+        @media (max-width: 768px) {
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
+            section {
+                padding: 20px;
+            }
+            header h1 {
+                font-size: 2.5em;
+            }
+            header p {
+                font-size: 1em;
+            }
+            .quiz-options {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .quiz-ball {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Il Sangue</h1>
+        <p>Componenti e Funzioni per l'OSS</p>
+    </header>
+
+    <nav>
+        <a href="#introduzione">Introduzione</a>
+        <a href="#parte-corpuscolata">Parte Corpuscolata</a>
+        <a href="#parte-liquida">Parte Liquida</a>
+        <a href="#funzioni">Funzioni</a>
+        <a href="#quiz">Quiz</a>
+    </nav>
+
+    <div class="container">
+        <section id="introduzione">
+            <h2>Introduzione al Sangue</h2>
+            <p>Il sangue costituisce circa il 5-7% del volume corporeo. In un organismo adulto ne circolano, in media, 4-5 litri. Al suo movimento ed alla sua efficienza è legata la nostra vita. Il sangue è composto da una parte corpuscolata o cellulare (globuli rossi, globuli bianchi, piastrine) che rappresenta circa il 45% del totale, e una liquida chiamata plasma.</p>
+        </section>
+
+        <section id="parte-corpuscolata">
+            <h2>Parte Corpuscolata</h2>
+            <h3>Globuli Rossi (Eritrociti o Emazie)</h3>
+            <p>I globuli rossi hanno principalmente la funzione di trasportare, grazie a una proteina specializzata chiamata emoglobina, l’ossigeno ai tessuti eliminando l’anidride carbonica. Sono costituiti per il 65% di acqua e per il 35% di sostanze solide (95% di emoglobina e 5% di lipidi, enzimi). Non posseggono il nucleo, sono plastici (per riuscire ad attraversare i capillari) e sulla loro superficie sono presenti gli antigeni dei gruppi sanguigni. I valori normali vanno da 4,2 a 6 milioni per millimetro cubo.</p>
+            <h3>Globuli Bianchi (Leucociti)</h3>
+            <p>I globuli bianchi hanno una funzione di difesa dell’organismo, sia direttamente distruggendo le sostanze estranee penetrate nell’organismo sia producendo anticorpi. Sono divisi in granulociti (neutrofili, basofili ed eosinofili), linfociti e monociti. I valori normali vanno da 4.000 a 10.000 per millimetro cubo.</p>
+            <h3>Piastrine</h3>
+            <p>Le piastrine sono importanti nella coagulazione del sangue e nei processi riparativi e di cicatrizzazione; sono i più piccoli elementi del sangue. I valori normali vanno da 150.000 a 400.000.</p>
+        </section>
+
+        <section id="parte-liquida">
+            <h2>Parte Liquida</h2>
+            <h3>Plasma</h3>
+            <p>Il plasma rappresenta la componente liquida del sangue, grazie alla quale le cellule sanguigne possono circolare. È costituito prevalentemente da acqua (oltre il 90%), nella quale sono disciolte e veicolate molte sostanze quali proteine, zuccheri, grassi, sali minerali, ormoni, vitamine, anticorpi e fattori della coagulazione.</p>
+            <p>Dal plasma donato si possono ottenere, mediante frazionamento industriale:</p>
+            <ul>
+                <li><strong>Albumina:</strong> Trasporta diverse componenti del sangue e sostanze nutritive. Utilizzata nel trattamento di malattie del fegato e dei reni (cirrosi, nefrosi, ecc.) e per stati patologici gravi come lo shock da ustioni o traumi.</li>
+                <li><strong>Immunoglobuline:</strong> Anticorpi che si sviluppano a contatto con agenti estranei o dopo vaccinazioni. Usate per difetti immunologici o patologie autoimmunitarie.</li>
+                <li><strong>Fattori della coagulazione (VIII e IX):</strong> Fondamentali per i pazienti con emofilia A e B, permettendo una vita quasi normale.</li>
+            </ul>
+        </section>
+
+        <section id="funzioni">
+            <h2>Funzioni del Sangue</h2>
+            <ul>
+                <li><strong>Respiratoria:</strong> Scambio ossigeno/anidride carbonica.</li>
+                <li><strong>Nutritiva:</strong> Porta a tutte le cellule le sostanze nutrienti.</li>
+                <li><strong>Escretrice:</strong> Raccoglie i rifiuti, convogliandoli agli organi destinati a eliminarli.</li>
+                <li><strong>Termoregolatrice:</strong> Regola il calore.</li>
+                <li><strong>Regola l’equilibrio idrico e acido-basico:</strong> Per mezzo del plasma.</li>
+                <li><strong>Difesa:</strong> Trasporta i globuli bianchi e gli anticorpi.</li>
+                <li><strong>Coagulante:</strong> Grazie all’azione delle piastrine e dei fattori plasmatici della coagulazione.</li>
+            </ul>
+        </section>
+
+        <section id="quiz">
+            <h2>Quiz: Testa le Tue Conoscenze sul Sangue</h2>
+            <p>Seleziona un quiz e rispondi alle 30 domande entro 30 minuti. Le palline si illumineranno man mano che procedi!</p>
+            <div class="quiz-container">
+                <div class="quiz-selector">
+                    <select id="quiz-select" onchange="selectQuiz()">
+                        <option value="0">Seleziona un Quiz</option>
+                        <option value="1">Quiz 1</option>
+                        <option value="2">Quiz 2</option>
+                        <option value="3">Quiz 3</option>
+                        <option value="4">Quiz 4</option>
+                        <option value="5">Quiz 5</option>
+                    </select>
+                </div>
+                <div class="quiz-timer" id="quiz-timer" style="display: none;">Tempo rimanente: 30:00</div>
+                <div class="quiz-balls" id="quiz-balls" style="display: none;"></div>
+                <div class="quiz-question" id="quiz-question"></div>
+                <div class="quiz-options" id="quiz-options"></div>
+                <div class="quiz-feedback" id="quiz-feedback"></div>
+                <div class="quiz-result" id="quiz-result"></div>
+                <button class="retry-button" id="retry-button" style="display: none;">Riprova</button>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2025 Il Sangue - Tutti i diritti riservati</p>
+    </footer>
+
+    <script>
+        const allQuestions = [
+            // Quiz 1
+            [
+                { question: "Quale percentuale del volume corporeo occupa il sangue?", options: ["5-7%", "10-12%", "1-3%", "15-20%"], correct: "5-7%" },
+                { question: "Quanti litri di sangue circolano in media in un adulto?", options: ["4-5 litri", "2-3 litri", "6-7 litri", "8-10 litri"], correct: "4-5 litri" },
+                { question: "Quale parte del sangue è liquida?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale funzione hanno i globuli rossi?", options: ["Trasportare ossigeno", "Coagulare il sangue", "Difendere l’organismo", "Regolare il calore"], correct: "Trasportare ossigeno" },
+                { question: "Quale proteina nei globuli rossi trasporta l’ossigeno?", options: ["Emoglobina", "Albumina", "Fibrinogeno", "Immunoglobulina"], correct: "Emoglobina" },
+                { question: "Quale gas eliminano i globuli rossi?", options: ["Anidride carbonica", "Ossigeno", "Azoto", "Idrogeno"], correct: "Anidride carbonica" },
+                { question: "Quale caratteristica permette ai globuli rossi di passare nei capillari?", options: ["Plasticità", "Nucleo", "Rigidità", "Dimensione"], correct: "Plasticità" },
+                { question: "Quali elementi del sangue difendono l’organismo?", options: ["Globuli bianchi", "Piastrine", "Globuli rossi", "Plasma"], correct: "Globuli bianchi" },
+                { question: "Quale tipo di globuli bianchi produce anticorpi?", options: ["Linfociti", "Neutrofili", "Monociti", "Basofili"], correct: "Linfociti" },
+                { question: "Quale funzione hanno le piastrine?", options: ["Coagulazione", "Trasporto ossigeno", "Difesa", "Nutrizione"], correct: "Coagulazione" },
+                { question: "Quale componente rappresenta oltre il 90% del plasma?", options: ["Acqua", "Proteine", "Zuccheri", "Grassi"], correct: "Acqua" },
+                { question: "Quale proteina del plasma trasporta sostanze nutritive?", options: ["Albumina", "Immunoglobuline", "Fattori VIII", "Emoglobina"], correct: "Albumina" },
+                { question: "Quali sostanze del plasma sono anticorpi?", options: ["Immunoglobuline", "Albumina", "Fibrinogeno", "Fattori IX"], correct: "Immunoglobuline" },
+                { question: "Quale fattore della coagulazione è carente nell’emofilia A?", options: ["Fattore VIII", "Fattore IX", "Albumina", "Fibrinogeno"], correct: "Fattore VIII" },
+                { question: "Quale funzione del sangue regola il calore?", options: ["Termoregolatrice", "Respiratoria", "Nutritiva", "Difesa"], correct: "Termoregolatrice" },
+                { question: "Quali elementi del sangue sono più piccoli?", options: ["Piastrine", "Globuli rossi", "Globuli bianchi", "Plasma"], correct: "Piastrine" },
+                { question: "Quale valore normale dei globuli rossi è corretto?", options: ["4,2-6 milioni/mm³", "4.000-10.000/mm³", "150.000-400.000/mm³", "1-2 milioni/mm³"], correct: "4,2-6 milioni/mm³" },
+                { question: "Quale tipo di granulociti è più abbondante?", options: ["Neutrofili", "Basofili", "Eosinofili", "Linfociti"], correct: "Neutrofili" },
+                { question: "Quale funzione del sangue trasporta nutrienti?", options: ["Nutritiva", "Respiratoria", "Escretrice", "Coagulante"], correct: "Nutritiva" },
+                { question: "Quale parte del sangue è circa il 45% del totale?", options: ["Parte corpuscolata", "Plasma", "Albumina", "Immunoglobuline"], correct: "Parte corpuscolata" },
+                { question: "Quale malattia è trattata con l’albumina?", options: ["Cirrosi", "Emofilia", "Asma", "Diabete"], correct: "Cirrosi" },
+                { question: "Quale funzione del sangue raccoglie i rifiuti?", options: ["Escretrice", "Respiratoria", "Difesa", "Termoregolatrice"], correct: "Escretrice" },
+                { question: "Quali elementi del sangue mancano di nucleo?", options: ["Globuli rossi", "Globuli bianchi", "Piastrine", "Linfociti"], correct: "Globuli rossi" },
+                { question: "Quale valore normale dei globuli bianchi è corretto?", options: ["4.000-10.000/mm³", "4,2-6 milioni/mm³", "150.000-400.000/mm³", "1.000-2.000/mm³"], correct: "4.000-10.000/mm³" },
+                { question: "Quale componente del plasma aiuta la coagulazione?", options: ["Fattori della coagulazione", "Zuccheri", "Grassi", "Vitamine"], correct: "Fattori della coagulazione" },
+                { question: "Quale funzione del sangue regola l’equilibrio acido-basico?", options: ["Plasma", "Respiratoria", "Nutritiva", "Coagulante"], correct: "Plasma" },
+                { question: "Quale tipo di globuli bianchi combatte i parassiti?", options: ["Eosinofili", "Neutrofili", "Basofili", "Monociti"], correct: "Eosinofili" },
+                { question: "Quale sostanza del plasma è usata per l’emofilia B?", options: ["Fattore IX", "Fattore VIII", "Albumina", "Immunoglobuline"], correct: "Fattore IX" },
+                { question: "Quali antigeni si trovano sui globuli rossi?", options: ["Gruppi sanguigni", "Anticorpi", "Fattori VIII", "Proteine"], correct: "Gruppi sanguigni" },
+                { question: "Quale funzione del sangue trasporta gli anticorpi?", options: ["Difesa", "Respiratoria", "Nutritiva", "Escretrice"], correct: "Difesa" }
+            ],
+            // Quiz 2
+            [
+                { question: "Quale componente del sangue è il 55% del totale?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale elemento del sangue trasporta l’anidride carbonica?", options: ["Globuli rossi", "Piastrine", "Globuli bianchi", "Plasma"], correct: "Globuli rossi" },
+                { question: "Quale proteina è il 95% delle sostanze solide dei globuli rossi?", options: ["Emoglobina", "Albumina", "Fibrinogeno", "Immunoglobuline"], correct: "Emoglobina" },
+                { question: "Quali globuli bianchi sono granulociti?", options: ["Neutrofili", "Linfociti", "Monociti", "Tutti"], correct: "Neutrofili" },
+                { question: "Quale valore normale delle piastrine è corretto?", options: ["150.000-400.000/mm³", "4,2-6 milioni/mm³", "4.000-10.000/mm³", "1.000-2.000/mm³"], correct: "150.000-400.000/mm³" },
+                { question: "Quale funzione del sangue è legata alla coagulazione?", options: ["Coagulante", "Respiratoria", "Nutritiva", "Difesa"], correct: "Coagulante" },
+                { question: "Quale parte del sangue contiene ormoni?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale malattia è trattata con le immunoglobuline?", options: ["Patologie autoimmunitarie", "Cirrosi", "Emofilia", "Nefrosi"], correct: "Patologie autoimmunitarie" },
+                { question: "Quale tipo di globuli bianchi rilascia istamina?", options: ["Basofili", "Neutrofili", "Eosinofili", "Linfociti"], correct: "Basofili" },
+                { question: "Quale percentuale di acqua hanno i globuli rossi?", options: ["65%", "90%", "35%", "50%"], correct: "65%" },
+                { question: "Quale funzione del sangue scambia ossigeno?", options: ["Respiratoria", "Nutritiva", "Escretrice", "Coagulante"], correct: "Respiratoria" },
+                { question: "Quale componente del plasma è usato per lo shock da ustioni?", options: ["Albumina", "Immunoglobuline", "Fattore VIII", "Fattore IX"], correct: "Albumina" },
+                { question: "Quale tipo di globuli bianchi fagocita i batteri?", options: ["Monociti", "Linfociti", "Basofili", "Eosinofili"], correct: "Monociti" },
+                { question: "Quale elemento del sangue è coinvolto nella cicatrizzazione?", options: ["Piastrine", "Globuli rossi", "Globuli bianchi", "Plasma"], correct: "Piastrine" },
+                { question: "Quale sostanza del plasma regola l’equilibrio idrico?", options: ["Acqua", "Zuccheri", "Grassi", "Proteine"], correct: "Acqua" },
+                { question: "Quale funzione del sangue elimina i rifiuti?", options: ["Escretrice", "Respiratoria", "Nutritiva", "Difesa"], correct: "Escretrice" },
+                { question: "Quale parte del sangue contiene sali minerali?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale malattia è legata alla carenza di fattore IX?", options: ["Emofilia B", "Emofilia A", "Cirrosi", "Nefrosi"], correct: "Emofilia B" },
+                { question: "Quale tipo di granulociti combatte le allergie?", options: ["Eosinofili", "Neutrofili", "Basofili", "Linfociti"], correct: "Eosinofili" },
+                { question: "Quale funzione del sangue trasporta i globuli bianchi?", options: ["Difesa", "Respiratoria", "Nutritiva", "Coagulante"], correct: "Difesa" },
+                { question: "Quale percentuale di sostanze solide hanno i globuli rossi?", options: ["35%", "65%", "90%", "50%"], correct: "35%" },
+                { question: "Quale componente del sangue è circa il 45%?", options: ["Parte corpuscolata", "Plasma", "Albumina", "Fattori VIII"], correct: "Parte corpuscolata" },
+                { question: "Quale proteina del plasma è usata per la nefrosi?", options: ["Albumina", "Immunoglobuline", "Fattore VIII", "Fattore IX"], correct: "Albumina" },
+                { question: "Quali elementi del sangue hanno antigeni di superficie?", options: ["Globuli rossi", "Piastrine", "Globuli bianchi", "Plasma"], correct: "Globuli rossi" },
+                { question: "Quale funzione del sangue regola il pH?", options: ["Plasma", "Respiratoria", "Nutritiva", "Coagulante"], correct: "Plasma" },
+                { question: "Quale tipo di globuli bianchi è più numeroso?", options: ["Neutrofili", "Linfociti", "Monociti", "Basofili"], correct: "Neutrofili" },
+                { question: "Quale componente del plasma è usato per l’emofilia A?", options: ["Fattore VIII", "Fattore IX", "Albumina", "Immunoglobuline"], correct: "Fattore VIII" },
+                { question: "Quale parte del sangue trasporta vitamine?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale funzione del sangue è legata alle piastrine?", options: ["Coagulante", "Respiratoria", "Nutritiva", "Difesa"], correct: "Coagulante" },
+                { question: "Quale elemento del sangue non ha nucleo?", options: ["Globuli rossi", "Globuli bianchi", "Piastrine", "Linfociti"], correct: "Globuli rossi" }
+            ],
+            // Quiz 3
+            [
+                { question: "Quale parte del sangue permette la circolazione delle cellule?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale elemento del sangue contiene emoglobina?", options: ["Globuli rossi", "Piastrine", "Globuli bianchi", "Plasma"], correct: "Globuli rossi" },
+                { question: "Quale tipo di globuli bianchi combatte le infezioni?", options: ["Neutrofili", "Linfociti", "Basofili", "Eosinofili"], correct: "Neutrofili" },
+                { question: "Quale funzione del sangue trasporta ossigeno?", options: ["Respiratoria", "Nutritiva", "Escretrice", "Coagulante"], correct: "Respiratoria" },
+                { question: "Quale componente del plasma è usato per difetti immunologici?", options: ["Immunoglobuline", "Albumina", "Fattore VIII", "Fattore IX"], correct: "Immunoglobuline" },
+                { question: "Quale elemento del sangue è plastico?", options: ["Globuli rossi", "Piastrine", "Globuli bianchi", "Plasma"], correct: "Globuli rossi" },
+                { question: "Quale valore normale dei globuli bianchi è corretto?", options: ["4.000-10.000/mm³", "4,2-6 milioni/mm³", "150.000-400.000/mm³", "1-2 milioni/mm³"], correct: "4.000-10.000/mm³" },
+                { question: "Quale funzione del sangue regola la temperatura?", options: ["Termoregolatrice", "Respiratoria", "Nutritiva", "Difesa"], correct: "Termoregolatrice" },
+                { question: "Quale tipo di globuli bianchi è coinvolto nelle allergie?", options: ["Basofili", "Neutrofili", "Eosinofili", "Monociti"], correct: "Basofili" },
+                { question: "Quale componente del sangue è il 45% del totale?", options: ["Parte corpuscolata", "Plasma", "Albumina", "Immunoglobuline"], correct: "Parte corpuscolata" },
+                { question: "Quale proteina del plasma è usata per la cirrosi?", options: ["Albumina", "Immunoglobuline", "Fattore VIII", "Fattore IX"], correct: "Albumina" },
+                { question: "Quale elemento del sangue coagula?", options: ["Piastrine", "Globuli rossi", "Globuli bianchi", "Plasma"], correct: "Piastrine" },
+                { question: "Quale funzione del sangue trasporta nutrienti?", options: ["Nutritiva", "Respiratoria", "Escretrice", "Coagulante"], correct: "Nutritiva" },
+                { question: "Quale tipo di granulociti combatte i parassiti?", options: ["Eosinofili", "Neutrofili", "Basofili", "Linfociti"], correct: "Eosinofili" },
+                { question: "Quale componente del plasma è usato per l’emofilia B?", options: ["Fattore IX", "Fattore VIII", "Albumina", "Immunoglobuline"], correct: "Fattore IX" },
+                { question: "Quale parte del sangue contiene zuccheri?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale valore normale dei globuli rossi è corretto?", options: ["4,2-6 milioni/mm³", "4.000-10.000/mm³", "150.000-400.000/mm³", "1-2 milioni/mm³"], correct: "4,2-6 milioni/mm³" },
+                { question: "Quale funzione del sangue elimina i rifiuti?", options: ["Escretrice", "Respiratoria", "Nutritiva", "Difesa"], correct: "Escretrice" },
+                { question: "Quale tipo di globuli bianchi produce anticorpi?", options: ["Linfociti", "Neutrofili", "Monociti", "Basofili"], correct: "Linfociti" },
+                { question: "Quale componente del sangue regola l’equilibrio idrico?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale malattia è legata alla carenza di fattore VIII?", options: ["Emofilia A", "Emofilia B", "Cirrosi", "Nefrosi"], correct: "Emofilia A" },
+                { question: "Quale elemento del sangue contiene antigeni dei gruppi sanguigni?", options: ["Globuli rossi", "Piastrine", "Globuli bianchi", "Plasma"], correct: "Globuli rossi" },
+                { question: "Quale funzione del sangue trasporta gli anticorpi?", options: ["Difesa", "Respiratoria", "Nutritiva", "Coagulante"], correct: "Difesa" },
+                { question: "Quale tipo di globuli bianchi fagocita?", options: ["Monociti", "Linfociti", "Basofili", "Eosinofili"], correct: "Monociti" },
+                { question: "Quale valore normale delle piastrine è corretto?", options: ["150.000-400.000/mm³", "4,2-6 milioni/mm³", "4.000-10.000/mm³", "1-2 milioni/mm³"], correct: "150.000-400.000/mm³" },
+                { question: "Quale componente del plasma trasporta ormoni?", options: ["Acqua", "Proteine", "Zuccheri", "Grassi"], correct: "Acqua" },
+                { question: "Quale funzione del sangue è legata all’emoglobina?", options: ["Respiratoria", "Nutritiva", "Escretrice", "Coagulante"], correct: "Respiratoria" },
+                { question: "Quale parte del sangue contiene grassi?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale tipo di globuli bianchi è più abbondante?", options: ["Neutrofili", "Linfociti", "Monociti", "Basofili"], correct: "Neutrofili" },
+                { question: "Quale elemento del sangue è più piccolo?", options: ["Piastrine", "Globuli rossi", "Globuli bianchi", "Plasma"], correct: "Piastrine" }
+            ],
+            // Quiz 4
+            [
+                { question: "Quale percentuale del sangue è plasma?", options: ["55%", "45%", "65%", "35%"], correct: "55%" },
+                { question: "Quale elemento del sangue trasporta ossigeno?", options: ["Globuli rossi", "Piastrine", "Globuli bianchi", "Plasma"], correct: "Globuli rossi" },
+                { question: "Quale proteina è presente nei globuli rossi?", options: ["Emoglobina", "Albumina", "Fibrinogeno", "Immunoglobuline"], correct: "Emoglobina" },
+                { question: "Quale tipo di globuli bianchi è granulocita?", options: ["Neutrofili", "Linfociti", "Monociti", "Tutti"], correct: "Neutrofili" },
+                { question: "Quale funzione del sangue è legata alle piastrine?", options: ["Coagulante", "Respiratoria", "Nutritiva", "Difesa"], correct: "Coagulante" },
+                { question: "Quale componente del plasma è usato per la nefrosi?", options: ["Albumina", "Immunoglobuline", "Fattore VIII", "Fattore IX"], correct: "Albumina" },
+                { question: "Quale tipo di globuli bianchi combatte i parassiti?", options: ["Eosinofili", "Neutrofili", "Basofili", "Linfociti"], correct: "Eosinofili" },
+                { question: "Quale valore normale delle piastrine è corretto?", options: ["150.000-400.000/mm³", "4,2-6 milioni/mm³", "4.000-10.000/mm³", "1-2 milioni/mm³"], correct: "150.000-400.000/mm³" },
+                { question: "Quale funzione del sangue regola il pH?", options: ["Plasma", "Respiratoria", "Nutritiva", "Coagulante"], correct: "Plasma" },
+                { question: "Quale parte del sangue contiene anticorpi?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale malattia è trattata con il fattore IX?", options: ["Emofilia B", "Emofilia A", "Cirrosi", "Nefrosi"], correct: "Emofilia B" },
+                { question: "Quale elemento del sangue è plastico?", options: ["Globuli rossi", "Piastrine", "Globuli bianchi", "Plasma"], correct: "Globuli rossi" },
+                { question: "Quale funzione del sangue trasporta nutrienti?", options: ["Nutritiva", "Respiratoria", "Escretrice", "Coagulante"], correct: "Nutritiva" },
+                { question: "Quale tipo di globuli bianchi produce anticorpi?", options: ["Linfociti", "Neutrofili", "Monociti", "Basofili"], correct: "Linfociti" },
+                { question: "Quale componente del sangue elimina l’anidride carbonica?", options: ["Globuli rossi", "Piastrine", "Globuli bianchi", "Plasma"], correct: "Globuli rossi" },
+                { question: "Quale valore normale dei globuli bianchi è corretto?", options: ["4.000-10.000/mm³", "4,2-6 milioni/mm³", "150.000-400.000/mm³", "1-2 milioni/mm³"], correct: "4.000-10.000/mm³" },
+                { question: "Quale funzione del sangue regola la temperatura?", options: ["Termoregolatrice", "Respiratoria", "Nutritiva", "Difesa"], correct: "Termoregolatrice" },
+                { question: "Quale tipo di globuli bianchi rilascia istamina?", options: ["Basofili", "Neutrofili", "Eosinofili", "Monociti"], correct: "Basofili" },
+                { question: "Quale componente del plasma è usato per l’emofilia A?", options: ["Fattore VIII", "Fattore IX", "Albumina", "Immunoglobuline"], correct: "Fattore VIII" },
+                { question: "Quale parte del sangue contiene sali minerali?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale funzione del sangue elimina i rifiuti?", options: ["Escretrice", "Respiratoria", "Nutritiva", "Coagulante"], correct: "Escretrice" },
+                { question: "Quale tipo di globuli bianchi fagocita i batteri?", options: ["Monociti", "Linfociti", "Basofili", "Eosinofili"], correct: "Monociti" },
+                { question: "Quale valore normale dei globuli rossi è corretto?", options: ["4,2-6 milioni/mm³", "4.000-10.000/mm³", "150.000-400.000/mm³", "1-2 milioni/mm³"], correct: "4,2-6 milioni/mm³" },
+                { question: "Quale componente del plasma trasporta vitamine?", options: ["Acqua", "Proteine", "Zuccheri", "Grassi"], correct: "Acqua" },
+                { question: "Quale funzione del sangue trasporta gli anticorpi?", options: ["Difesa", "Respiratoria", "Nutritiva", "Coagulante"], correct: "Difesa" },
+                { question: "Quale elemento del sangue contiene antigeni?", options: ["Globuli rossi", "Piastrine", "Globuli bianchi", "Plasma"], correct: "Globuli rossi" },
+                { question: "Quale parte del sangue è circa il 45%?", options: ["Parte corpuscolata", "Plasma", "Albumina", "Immunoglobuline"], correct: "Parte corpuscolata" },
+                { question: "Quale malattia è trattata con le immunoglobuline?", options: ["Patologie autoimmunitarie", "Cirrosi", "Emofilia", "Nefrosi"], correct: "Patologie autoimmunitarie" },
+                { question: "Quale tipo di globuli bianchi è più numeroso?", options: ["Neutrofili", "Linfociti", "Monociti", "Basofili"], correct: "Neutrofili" },
+                { question: "Quale elemento del sangue è più piccolo?", options: ["Piastrine", "Globuli rossi", "Globuli bianchi", "Plasma"], correct: "Piastrine" }
+            ],
+            // Quiz 5
+            [
+                { question: "Quale percentuale del volume corporeo è sangue?", options: ["5-7%", "10-12%", "1-3%", "15-20%"], correct: "5-7%" },
+                { question: "Quale elemento del sangue coagula?", options: ["Piastrine", "Globuli rossi", "Globuli bianchi", "Plasma"], correct: "Piastrine" },
+                { question: "Quale proteina trasporta ossigeno?", options: ["Emoglobina", "Albumina", "Fibrinogeno", "Immunoglobuline"], correct: "Emoglobina" },
+                { question: "Quale tipo di globuli bianchi combatte le allergie?", options: ["Basofili", "Neutrofili", "Eosinofili", "Monociti"], correct: "Basofili" },
+                { question: "Quale funzione del sangue elimina l’anidride carbonica?", options: ["Respiratoria", "Nutritiva", "Escretrice", "Coagulante"], correct: "Respiratoria" },
+                { question: "Quale componente del plasma è usato per la cirrosi?", options: ["Albumina", "Immunoglobuline", "Fattore VIII", "Fattore IX"], correct: "Albumina" },
+                { question: "Quale tipo di globuli bianchi produce anticorpi?", options: ["Linfociti", "Neutrofili", "Monociti", "Basofili"], correct: "Linfociti" },
+                { question: "Quale valore normale delle piastrine è corretto?", options: ["150.000-400.000/mm³", "4,2-6 milioni/mm³", "4.000-10.000/mm³", "1-2 milioni/mm³"], correct: "150.000-400.000/mm³" },
+                { question: "Quale funzione del sangue regola l’equilibrio idrico?", options: ["Plasma", "Respiratoria", "Nutritiva", "Coagulante"], correct: "Plasma" },
+                { question: "Quale parte del sangue contiene zuccheri?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale malattia è trattata con il fattore VIII?", options: ["Emofilia A", "Emofilia B", "Cirrosi", "Nefrosi"], correct: "Emofilia A" },
+                { question: "Quale elemento del sangue è plastico?", options: ["Globuli rossi", "Piastrine", "Globuli bianchi", "Plasma"], correct: "Globuli rossi" },
+                { question: "Quale funzione del sangue trasporta nutrienti?", options: ["Nutritiva", "Respiratoria", "Escretrice", "Coagulante"], correct: "Nutritiva" },
+                { question: "Quale tipo di globuli bianchi fagocita i batteri?", options: ["Monociti", "Linfociti", "Basofili", "Eosinofili"], correct: "Monociti" },
+                { question: "Quale componente del sangue elimina i rifiuti?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale valore normale dei globuli bianchi è corretto?", options: ["4.000-10.000/mm³", "4,2-6 milioni/mm³", "150.000-400.000/mm³", "1-2 milioni/mm³"], correct: "4.000-10.000/mm³" },
+                { question: "Quale funzione del sangue regola la temperatura?", options: ["Termoregolatrice", "Respiratoria", "Nutritiva", "Difesa"], correct: "Termoregolatrice" },
+                { question: "Quale tipo di globuli bianchi combatte i parassiti?", options: ["Eosinofili", "Neutrofili", "Basofili", "Monociti"], correct: "Eosinofili" },
+                { question: "Quale componente del plasma è usato per l’emofilia B?", options: ["Fattore IX", "Fattore VIII", "Albumina", "Immunoglobuline"], correct: "Fattore IX" },
+                { question: "Quale parte del sangue contiene anticorpi?", options: ["Plasma", "Globuli rossi", "Piastrine", "Leucociti"], correct: "Plasma" },
+                { question: "Quale funzione del sangue trasporta gli anticorpi?", options: ["Difesa", "Respiratoria", "Nutritiva", "Coagulante"], correct: "Difesa" },
+                { question: "Quale tipo di globuli bianchi è più numeroso?", options: ["Neutrofili", "Linfociti", "Monociti", "Basofili"], correct: "Neutrofili" },
+                { question: "Quale valore normale dei globuli rossi è corretto?", options: ["4,2-6 milioni/mm³", "4.000-10.000/mm³", "150.000-400.000/mm³", "1-2 milioni/mm³"], correct: "4,2-6 milioni/mm³" },
+                { question: "Quale componente del plasma trasporta ormoni?", options: ["Acqua", "Proteine", "Zuccheri", "Grassi"], correct: "Acqua" },
+                { question: "Quale elemento del sangue contiene antigeni?", options: ["Globuli rossi", "Piastrine", "Globuli bianchi", "Plasma"], correct: "Globuli rossi" },
+                { question: "Quale parte del sangue è circa il 45%?", options: ["Parte corpuscolata", "Plasma", "Albumina", "Immunoglobuline"], correct: "Parte corpuscolata" },
+                { question: "Quale malattia è trattata con le immunoglobuline?", options: ["Patologie autoimmunitarie", "Cirrosi", "Emofilia", "Nefrosi"], correct: "Patologie autoimmunitarie" },
+                { question: "Quale funzione del sangue elimina i rifiuti?", options: ["Escretrice", "Respiratoria", "Nutritiva", "Coagulante"], correct: "Escretrice" },
+                { question: "Quale tipo di globuli bianchi rilascia istamina?", options: ["Basofili", "Neutrofili", "Eosinofili", "Monociti"], correct: "Basofili" },
+                { question: "Quale elemento del sangue è più piccolo?", options: ["Piastrine", "Globuli rossi", "Globuli bianchi", "Plasma"], correct: "Piastrine" }
+            ]
+        ];
+
+        let currentQuiz = null;
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timeLeft = 30 * 60; // 30 minuti in secondi
+        let timerInterval;
+
+        const ballsContainer = document.getElementById('quiz-balls');
+        for (let i = 1; i <= 30; i++) {
+            const ball = document.createElement('div');
+            ball.className = 'quiz-ball';
+            ball.id = `ball-${i}`;
+            ball.innerText = i;
+            ballsContainer.appendChild(ball);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('quiz-timer').innerText = `Tempo rimanente: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function selectQuiz() {
+            const quizSelect = document.getElementById('quiz-select');
+            const selectedQuiz = parseInt(quizSelect.value);
+            if (selectedQuiz === 0) {
+                document.getElementById('quiz-timer').style.display = 'none';
+                document.getElementById('quiz-balls').style.display = 'none';
+                document.getElementById('quiz-question').innerText = '';
+                document.getElementById('quiz-options').innerHTML = '';
+                document.getElementById('quiz-feedback').style.display = 'none';
+                document.getElementById('quiz-result').innerHTML = '';
+                document.getElementById('retry-button').style.display = 'none';
+                clearInterval(timerInterval);
+                return;
+            }
+
+            currentQuiz = selectedQuiz - 1;
+            resetQuiz();
+        }
+
+        function loadQuizQuestion() {
+            const questionElement = document.getElementById('quiz-question');
+            const optionsElement = document.getElementById('quiz-options');
+            const feedbackElement = document.getElementById('quiz-feedback');
+            const resultElement = document.getElementById('quiz-result');
+            const retryButton = document.getElementById('retry-button');
+
+            if (currentQuestionIndex >= currentQuestions.length) {
+                endQuiz();
+                return;
+            }
+
+            const currentQuestion = currentQuestions[currentQuestionIndex];
+            questionElement.innerText = `Domanda ${currentQuestionIndex + 1}: ${currentQuestion.question}`;
+            optionsElement.innerHTML = '';
+            feedbackElement.style.display = 'none';
+            resultElement.innerHTML = '';
+            retryButton.style.display = 'none';
+
+            const shuffledOptions = shuffleArray([...currentQuestion.options]);
+            shuffledOptions.forEach(option => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'quiz-option';
+                optionElement.innerText = option;
+                optionElement.addEventListener('click', () => checkAnswer(option, currentQuestion.correct));
+                optionsElement.appendChild(optionElement);
+            });
+        }
+
+        function checkAnswer(selected, correct) {
+            const feedbackElement = document.getElementById('quiz-feedback');
+            feedbackElement.style.display = 'block';
+            const currentBall = document.getElementById(`ball-${currentQuestionIndex + 1}`);
+            if (selected === correct) {
+                currentBall.classList.add('correct');
+                feedbackElement.innerText = 'Corretto! Ottimo lavoro!';
+                feedbackElement.className = 'quiz-feedback correct';
+                score++;
+            } else {
+                currentBall.classList.add('incorrect');
+                feedbackElement.innerText = `Sbagliato. La risposta corretta è: ${correct}.`;
+                feedbackElement.className = 'quiz-feedback incorrect';
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuizQuestion();
+            }, 1500);
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            const questionElement = document.getElementById('quiz-question');
+            const optionsElement = document.getElementById('quiz-options');
+            const feedbackElement = document.getElementById('quiz-feedback');
+            const resultElement = document.getElementById('quiz-result');
+            const timerElement = document.getElementById('quiz-timer');
+            const retryButton = document.getElementById('retry-button');
+
+            questionElement.innerText = 'Quiz Completato!';
+            optionsElement.innerHTML = '';
+            feedbackElement.style.display = 'none';
+            timerElement.style.display = 'none';
+            retryButton.style.display = 'block';
+
+            if (score >= 21) {
+                resultElement.innerText = `Hai superato il test! Punteggio: ${score}/30`;
+                resultElement.style.color = '#00ff00';
+            } else {
+                resultElement.innerText = `Torna a studiare! Punteggio: ${score}/30`;
+                resultElement.style.color = '#ff0000';
+            }
+        }
+
+        function resetQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            timeLeft = 30 * 60;
+            document.getElementById('quiz-timer').style.display = 'block';
+            document.getElementById('quiz-timer').innerText = 'Tempo rimanente: 30:00';
+            document.getElementById('quiz-balls').style.display = 'flex';
+            document.querySelectorAll('.quiz-ball').forEach(ball => {
+                ball.classList.remove('correct');
+                ball.classList.remove('incorrect');
+            });
+            currentQuestions = shuffleArray([...allQuestions[currentQuiz]]);
+            clearInterval(timerInterval);
+            startTimer();
+            loadQuizQuestion();
+        }
+
+        document.getElementById('retry-button').addEventListener('click', resetQuiz);
+    </script>
+</body>
+</html>
